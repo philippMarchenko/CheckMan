@@ -5,16 +5,41 @@
     android:layout_height="match_parent"
     >
 
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:id="@+id/appBarLayout">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view_declarations"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbarMain"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentTop="true" />
+            android:layout_height="?attr/actionBarSize"
+            app:layout_scrollFlags="scroll|enterAlwaysCollapsed"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
 
+    </android.support.design.widget.AppBarLayout>
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view_declarations"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="false"
+        android:clipToPadding="false"
+        android:layout_below="@+id/appBarLayout">
+
+    </android.support.v7.widget.RecyclerView>
+
+
+        <ProgressBar
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/progress"
+            android:layout_marginTop="60dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="154dp" />
 
 </RelativeLayout>

@@ -25,6 +25,12 @@ public class DeclarationsAdapter extends RecyclerView.Adapter<DeclarationsAdapte
     private Activity myActivity;
     private List<Declarations.Item> declarationsList;
 
+    IDeclarationsAdapterListener iDeclarationsAdapterListener;
+
+    public interface IDeclarationsAdapterListener {
+        public void onClick(int position);
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
         private TextView name,place_work,position;
@@ -41,11 +47,12 @@ public class DeclarationsAdapter extends RecyclerView.Adapter<DeclarationsAdapte
     }
 
 
-    public DeclarationsAdapter(Context context, Activity activity, List<Declarations.Item> list) {
+    public DeclarationsAdapter(Context context, Activity activity, List<Declarations.Item> list,IDeclarationsAdapterListener iDeclarationsAdapterListener) {
 
         mContext = context;
         myActivity = activity;
         declarationsList = list;
+        this.iDeclarationsAdapterListener = iDeclarationsAdapterListener;
     }
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
@@ -69,11 +76,7 @@ public class DeclarationsAdapter extends RecyclerView.Adapter<DeclarationsAdapte
             @Override
             public void onClick(View view) {
 
-                Intent intent = new Intent(mContext, DeclarationActivity.class);
-                intent.putExtra("name", declarations.getLastname() + " " + declarations.getFirstname());
-                intent.putExtra("linkPDF", declarations.getLinkPDF());
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(intent);
+              iDeclarationsAdapterListener.onClick(position);
 
             }
         });
