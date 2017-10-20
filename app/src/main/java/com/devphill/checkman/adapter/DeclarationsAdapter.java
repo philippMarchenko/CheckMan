@@ -3,6 +3,7 @@ package com.devphill.checkman.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -43,6 +44,12 @@ public class DeclarationsAdapter extends RecyclerView.Adapter<DeclarationsAdapte
             this.position = (TextView) v.findViewById(R.id.position);
             this.card_view = v.findViewById(R.id.card_view_declarations);
 
+            Typeface typefaceR = Typeface.createFromAsset(mContext.getAssets(),
+                    "fonts/UbuntuMono-R.ttf");
+            this.place_work.setTypeface(typefaceR);
+            this.position.setTypeface(typefaceR);
+            this.name.setTypeface(typefaceR);
+
         }
     }
 
@@ -67,9 +74,9 @@ public class DeclarationsAdapter extends RecyclerView.Adapter<DeclarationsAdapte
 
         final Declarations.Item declarations = declarationsList.get(position);
 
-        viewHolder.name.setText(Html.fromHtml(declarations.getLastname() + " " + declarations.getFirstname()));
-        viewHolder.place_work.setText(Html.fromHtml(declarations.getPlaceOfWork()));
-        viewHolder.position.setText(Html.fromHtml(declarations.getPosition()));
+        viewHolder.name.setText(declarations.getLastname() + " " + declarations.getFirstname());
+        viewHolder.place_work.setText(declarations.getPlaceOfWork());
+        viewHolder.position.setText(declarations.getPosition());
 
         // define an on click listener to open PlaybackFragment
         viewHolder.card_view.setOnClickListener(new View.OnClickListener() {

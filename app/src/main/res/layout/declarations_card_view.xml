@@ -10,12 +10,13 @@
         android:id="@+id/card_view_declarations"
         android:layout_width="match_parent"
         android:layout_gravity="center"
-        android:layout_margin="2dp"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:transitionName="open_mediaplayer"
-        card_view:cardCornerRadius="4dp"
-        card_view:cardElevation="3dp"
-        android:layout_height="wrap_content">
+        android:layout_margin="5dp"
+        android:elevation="8dp"
+        card_view:cardCornerRadius="8dp"
+        card_view:cardBackgroundColor="@color/colorAccentSecondary"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:foreground="?android:attr/selectableItemBackground">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -25,14 +26,25 @@
                 android:text="Вася"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="false"
+                android:layout_alignParentStart="false"
                 android:id="@+id/name"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
                 android:fontFamily="serif"
-                android:textColor="@android:color/black"
-                android:textSize="16sp" />
+                android:textColor="@color/cardview_light_background"
+                android:textSize="16sp"
+                android:layout_margin="5dp" />
+
+            <TextView
+                android:text="Начальник"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/position"
+                android:textSize="16sp"
+                android:textColor="@color/cardview_light_background"
+                android:layout_below="@+id/place_work"
+                android:layout_alignParentStart="false"
+                android:fontFamily="serif"
+                android:layout_margin="5dp" />
 
             <TextView
                 android:id="@+id/place_work"
@@ -41,23 +53,11 @@
                 android:fontFamily="serif"
                 android:text="ЦНАП"
                 android:textSize="16sp"
-                android:layout_marginTop="5dp"
-                android:layout_marginStart="5dp"
-                android:textColor="@android:color/black"
+                android:textColor="@color/cardview_light_background"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_centerVertical="false"
                 android:layout_below="@+id/name" />
-
-            <TextView
-                android:text="Начальник"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/position"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"
-                android:layout_below="@+id/place_work"
-                android:layout_alignParentStart="false"
-                android:layout_alignStart="@+id/name"
-                android:fontFamily="serif"
-                android:layout_marginTop="5dp" />
 
 
         </RelativeLayout>

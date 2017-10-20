@@ -1,24 +1,34 @@
 package com.devphill.checkman;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.devphill.checkman.adapter.DeclarationsAdapter;
 import com.devphill.checkman.internet.ServerAPI;
 import com.devphill.checkman.model.Declarations;
+import com.mancj.materialsearchbar.MaterialSearchBar;
+import com.mancj.materialsearchbar.adapter.SuggestionsAdapter;
 import com.thin.downloadmanager.DefaultRetryPolicy;
 import com.thin.downloadmanager.DownloadManager;
 import com.thin.downloadmanager.DownloadRequest;
@@ -38,7 +48,9 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity implements DeclarationsAdapter.IDeclarationsAdapterListener{
+public class MainActivity extends AppCompatActivity implements DeclarationsAdapter.IDeclarationsAdapterListener,
+        MaterialSearchBar.OnSearchActionListener,
+        SuggestionsAdapter.OnItemViewClickListener{
 
     private Retrofit retrofit;
     private ServerAPI serverAPI;
@@ -57,39 +69,46 @@ public class MainActivity extends AppCompatActivity implements DeclarationsAdapt
     private String LOG_TAG = "MainActivityTag";
     private String name = "";
 
-    private Toolbar toolbar;
+    MaterialSearchBar materialSearchBar;
 
+    private List<String> suggestionList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbarMain);
-        //   toolbar_title = (TextView) toolbar.findViewById(R.id.toolbar_title);
+        materialSearchBar = (MaterialSearchBar) findViewById(R.id.searchBar);
 
+        suggestionList.add("Бовбас");
+        suggestionList.add("Порошенко");
+        suggestionList.add("Гройсман");
+        materialSearchBar.setLastSuggestions(suggestionList);
 
-        setSupportActionBar(toolbar);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        materialSearchBar.setOnSearchActionListener(this);
+        materialSearchBar.setSuggstionsClickListener(this);
 
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view_declarations);
-        declarationsAdapter = new DeclarationsAdapter(getBaseContext(),this,declarationsList,this);
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getBaseContext(), 1);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        declarationsAdapter = new DeclarationsAdapter(getBaseContext(),this,declarationsList,this);
         recyclerView.setAdapter(declarationsAdapter);
 
         progressBar = (ProgressBar) findViewById(R.id.progress);
         progressBar.setVisibility(View.INVISIBLE);
 
         initRetrofit ();
-        getDeclarationsList ();
 
-        Log.i(LOG_TAG, "onCreate");
+
+
+
+
 
     }
+
     private void initRetrofit (){
 
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
@@ -109,9 +128,8 @@ public class MainActivity extends AppCompatActivity implements DeclarationsAdapt
         serverAPI = retrofit.create(ServerAPI.class);
     }
 
-    private void getDeclarationsList (){
+    private void getDeclarationsList (CharSequence text){
 
-        Log.i(LOG_TAG, "getAllNewsList ");
 
         String netType = getNetworkType(getBaseContext());
         if(netType == null){
@@ -121,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements DeclarationsAdapt
         else {
             try {
 
-                serverAPI.getDeclarationsList("Бовбас").enqueue(new Callback<Declarations>() {
+                serverAPI.getDeclarationsList(text).enqueue(new Callback<Declarations>() {
                     @Override
                     public void onResponse(Call<Declarations> call, Response<Declarations> response) {
 
@@ -137,10 +155,18 @@ public class MainActivity extends AppCompatActivity implements DeclarationsAdapt
 
                         }
 
+                        recyclerView.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.INVISIBLE);
+                        materialSearchBar.disableSearch();
+
+
                     }
 
                     @Override
                     public void onFailure(Call<Declarations> call, Throwable t) {
+
+                        Toast.makeText(getBaseContext(), " Ошибка запроса " + t.toString(), Toast.LENGTH_LONG).show();
+
 
                         Log.i(LOG_TAG, "onFailure. Ошибка REST запроса getListNews " + t.toString());
                     }
@@ -237,6 +263,70 @@ public class MainActivity extends AppCompatActivity implements DeclarationsAdapt
             return activeNetwork.getTypeName();
         }
         return null;
+    }
+
+    @Override
+    public void onSearchStateChanged(boolean enabled) {
+
+        if(enabled){
+
+            materialSearchBar.showSuggestionsList();
+
+        }
+        else {
+
+            materialSearchBar.hideSuggestionsList();
+        }
+
+
+        Log.d("LOG_TAG", "onSearchStateChanged " + enabled);
+    }
+
+    @Override
+    public void onSearchConfirmed(CharSequence text) {
+
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+        progressBar.setVisibility(View.VISIBLE);
+
+        getDeclarationsList(text);
+
+        Log.i(LOG_TAG, "onSearchConfirmed " + text);
+    }
+
+    @Override
+    public void onButtonClicked(int buttonCode) {
+
+    }
+
+    @Override
+    public void OnItemClickListener(int position, View v) {
+
+        Log.i(LOG_TAG, "OnItemClickListener  position " + position);
+
+
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+        recyclerView.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
+
+        getDeclarationsList(suggestionList.get(position));
+    }
+
+    @Override
+    public void OnItemDeleteListener(int position, View v) {
+
+        Log.i(LOG_TAG, "OnItemDeleteListener  position " + position);
+
+
+        suggestionList.remove(position);
+        materialSearchBar.updateLastSuggestions(suggestionList);
     }
 
     @Override

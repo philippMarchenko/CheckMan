@@ -11,7 +11,7 @@ public interface ServerAPI {
     public static final String BASE_URL = "https://public-api.nazk.gov.ua";
 
     @GET("/v1/declaration/")
-    Call<Declarations> getDeclarationsList(@Query(value = "q") String q);
+    Call<Declarations> getDeclarationsList(@Query(value = "q") CharSequence q);
 
 
 }
